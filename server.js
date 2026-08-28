@@ -11,6 +11,13 @@ const produtos = [
     { id: 5, descricao: "Mouse sem fio", preco: 89.90, categoria: "Periféricos", estoque: 25 }
 ]
 
+app.use((req, res, next) => {
+    console.log(new Date().toLocaleString(), req.method, req.path)
+    next()
+})
+
+app.use ('/site', express.static ('site'))
+
 app.get('/produtos', (req, res) => {
     res.json (produtos)
 })

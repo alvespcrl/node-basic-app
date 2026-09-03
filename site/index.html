@@ -7,7 +7,28 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    Meu front end
+  <form id="form-produto">
+    <input type="text" id="descricao" placeholder="Descrição" required>
+    <input type="number" id="preco" placeholder="Preço" step="0.01" required>
+    <input type="text" id="categoria" placeholder="Categoria">
+    <input type="number" id="estoque" placeholder="Estoque">
+    <button type="submit">Salvar Produto</button>
+</form>
+
+<table border="1" style="margin-top: 20px; width: 100%;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Descrição</th>
+            <th>Preço</th>
+            <th>Categoria</th>
+            <th>Estoque</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody id="corpo-tabela">
+    </tbody>
+</table>
 
   <script src="app.js"></script>
 

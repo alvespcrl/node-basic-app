@@ -16,7 +16,8 @@ app.use((req, res, next) => {
     next()
 })
 
-app.use ('/site', express.static ('site'))
+// Libera o acesso direto dos arquivos da pasta site para o navegador
+app.use(express.static('site'))
 
 app.get('/produtos', (req, res) => {
     res.json (produtos)

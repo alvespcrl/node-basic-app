@@ -106,3 +106,22 @@ app.delete('/produtos/:id', (req, res) => {
 app.listen (3000, () => {
     console.log('Servidor ouvindo em http://localhost:3000')
 })
+
+// login
+
+const users = [
+    { id: 1, nome: "Alves", senha: "123"},
+    { id:2, nome: "Maria", senha: "456"},
+]
+app.use('/login', express.static('login'))
+
+app.get ('/login', (req, res) => {
+    const username = req.query.username;
+    const password = req.query.password;
+
+    usuario = users.find (u => u.nome === username)
+    if (usuario){
+        
+    }
+
+})

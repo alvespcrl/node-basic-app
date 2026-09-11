@@ -2,6 +2,7 @@ const express = require ('express')
 const app = express()
 app.use(express.json())
 const bcrypt = require('bcryptjs'); //importando o bcrypt
+const jwt = require('jsonwebtoken');
 
 
 const produtos = [
@@ -62,9 +63,8 @@ app.get('/produtos/:id', (req, res) => {
     return res.json(produto)
 })
 
-app.post('/produtos', (req, res) => {
+app.post('/produtos', verificarToken, (req, res) => {
 
-    console.log(req.body)
 
     const { descricao, preco, categoria, estoque } = req.body
 
@@ -85,9 +85,8 @@ app.post('/produtos', (req, res) => {
     produtos.push(novoProduto)
 
     res.status(201).json(novoProduto)
-
     
-})
+});
 
 app.put('/produtos/:id', (req, res) => {
     const id = parseInt(req.params.id)
@@ -136,19 +135,45 @@ app.listen (3000, () => {
 
 // login
 
-const users = [
-    { id: 1, nome: "Alves", senha: "123"},
-    { id:2, nome: "Maria", senha: "456"},
-]
 app.use('/login', express.static('login'))
 
-app.get ('/login', (req, res) => {
-    const username = req.query.username;
-    const password = req.query.password;
+app.post ('/login', async (req, res) => {
 
-    usuario = users.find (u => u.nome === username)
-    if (usuario){
-        
+    const {email, senha } = req.body;
+    const emailCadastrado = usuarios.find(usuario => usuario.email === email);
+
+    if (!emailCadastrado){
+        return res.status(400).json({mensagem: 'Email nao encontrado'});
     }
 
+    const senhaValida = await bcrypt.compare(senha, emailCadastrado.senha);
+
+    if(!senhaValida){
+        return res.status(400).json({mensagem: 'Senha incorreta!'});
+    }
+
+    const token = jwt.sign(
+        {id: emailCadastrado.id},
+        'chave_secreta_123',
+        {expiresIn: '1h'}
+    );
+    return res.status(200).json({token, mensagem: 'Login realizado'});
 })
+
+function verificarToken(req, res, next){
+
+    const {authorization} = req.headers;
+
+    if(!authorization){
+        return res.status(401).json({mensagem: 'token nao fornecido'})
+    }
+
+    const tokenPuro = authorization.split('Bearer ')[1];
+
+    try {
+        jwt.verify(tokenPuro, 'chave_secreta_123');
+        next()
+    } catch (erro){
+            return res.status(401).json({mensagem: 'erro'})
+        }
+}

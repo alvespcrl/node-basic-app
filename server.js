@@ -1,6 +1,7 @@
 const express = require ('express')
 const app = express()
 app.use(express.json())
+const bcrypt = require('bcryptjs'); //importando o bcrypt
 
 
 const produtos = [
@@ -10,6 +11,32 @@ const produtos = [
     { id: 4, descricao: "Teclado Mecânico", preco: 249.90, categoria: "Periféricos", estoque: 10 },
     { id: 5, descricao: "Mouse sem fio", preco: 89.90, categoria: "Periféricos", estoque: 25 }
 ]
+
+const usuarios = [];
+
+app.post('/usuarios', async(req, res) => {
+    const {nome, email, senha} = req.body;
+
+    const senhaCripto = await bcrypt.hash(senha, 10);
+
+    const novoUsuario = {
+        id: usuarios.length + 1,
+        nome,
+        email,
+        senha: senhaCripto
+    };
+
+    const usuarioEncontrado = usuarios.find(usuario => usuario.email === email);
+
+    if (usuarioEncontrado) {
+        res.status(400).json({mensagem: 'Usuario ja cadastrado!'})
+    }
+    usuarios.push(novoUsuario);
+    res.status(201).json({mensagem: 'Usuario criado com sucesso'});
+
+});
+
+
 
 app.use((req, res, next) => {
     console.log(new Date().toLocaleString(), req.method, req.path)
